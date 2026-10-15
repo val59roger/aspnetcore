@@ -37,13 +37,13 @@ jobs:
       - name: Set up .NET SDK
         uses: actions/setup-dotnet@v5
         with:
-          global-json-file: global.json
+          global-json-file: global.json    
       - name: Install SonarQube Cloud scanner
         if: steps.cache-sonar-scanner.outputs.cache-hit != 'true'
         shell: powershell
         run: |
-          New-Item -Path ${{ runner.temp }}\scanner -ItemType Directory
-          dotnet tool update dotnet-sonarscanner --tool-path ${{ runner.temp }}\scanner
+          New-Item -Path "${{ runner.temp }}\scanner" -ItemType Directory -Force
+          dotnet tool install dotnet-sonarscanner --tool-path "${{ runner.temp }}\scanner" --add-source https://api.nuget.org/v3/index.json
       - name: Build and analyze
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
