@@ -44,11 +44,14 @@ jobs:
         run: |
           New-Item -Path "${{ runner.temp }}\scanner" -ItemType Directory -Force
           dotnet tool install dotnet-sonarscanner --tool-path "${{ runner.temp }}\scanner" --add-source https://api.nuget.org/v3/index.json
+      - name: Restore repo (generates artifacts/bin/GenerateFiles)
+        shell: powershell
+        run: .\restore.cmd
       - name: Build and analyze
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         shell: powershell
         run: |
           ${{ runner.temp }}\scanner\dotnet-sonarscanner begin /k:"val59roger_aspnetcore" /o:"val59roger" /d:sonar.token="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io"
-          dotnet build src\Http\Http\src\Microsoft.AspNetCore.Http.csproj
+          dotnet build src\Http\Http\src\Microsoft.AspNetCore.Http.csproj --no-restore
           ${{ runner.temp }}\scanner\dotnet-sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
